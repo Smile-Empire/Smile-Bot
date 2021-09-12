@@ -10,7 +10,11 @@ module.exports = {
       embeds: [
         new MessageEmbed()
           .setTitle(':ping_pong: Pong!')
-          .setDescription(`往復: ${message.createdTimestamp - Date.now()}ms\nGateway: ${client.ws.ping}ms`)
+          .setDescription(
+            `往復: ${message.createdTimestamp - Date.now()}ms\nGateway: ${
+              client.ws.ping
+            }ms`,
+          )
           .defaultColor(),
       ],
     })
