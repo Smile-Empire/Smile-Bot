@@ -1,16 +1,31 @@
+require('http')
+  .createServer(function (req, res) {
+    res.write('OK')
+    res.end()
+  })
+  .listen(8080)
+
 const fs = require('fs')
-const Discord = require('discord.js')
+const { Client, Collection, Intents } = require('discord.js')
+const { createConnection } = require('mysql')
+const { token, mysql: msCfg } = require('./config.json')
 
-const client = new Discord.Client({
-  intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES],
+const client = new Client({
+  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
 })
-
-const { token } = require('./config.json')
 
 require('./helpers/extends')
 
-client.commands = new Discord.Collection()
-client.cooldowns = new Discord.Collection()
+client.con = createConnection({
+  host: msCfg.host,
+  user: msCfg.user,
+  password: msCfg.pass,
+  database: msCfg.db,
+})
+
+client.con.connect()
+
+client.commands = new Collection()
 
 const commandFolders = fs.readdirSync('./commands')
 
@@ -20,7 +35,7 @@ for (const folder of commandFolders) {
     .filter((file) => file.endsWith('.js'))
   for (const file of commandFiles) {
     const command = require(`./commands/${folder}/${file}`)
-    client.commands.set(command.name, command)
+    client.commands.set(command.data.name, command)
   }
 }
 
